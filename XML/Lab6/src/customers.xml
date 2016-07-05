@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE customers PUBLIC"//Java Learning Center
+//DTD Customers1.0" "cust.dtd">
+<customers>
+<customer cid="C-101" status="Active">
+<cname>Sri</cname>
+<email>neeraj@jlc</email>
+<phone>7415680028</phone>
+<city>Bangalore</city>
+</customer>
+</customers>

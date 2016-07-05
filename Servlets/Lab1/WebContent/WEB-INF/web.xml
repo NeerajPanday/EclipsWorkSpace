@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+<servlet>
+<servlet-name>dts</servlet-name>
+<servlet-class>neeraj.DTServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+<servlet-name>dts</servlet-name>
+<url-pattern>/dts</url-pattern>
+</servlet-mapping>
+</web-app>

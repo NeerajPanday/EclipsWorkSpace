@@ -1,0 +1,1200 @@
+
+
+
+
+
+
+
+Lab16:
+------------------------------------------------------------------------------------------------
+Lab17:@Autowired(required=false)==>import org.springframework.beans.factory.annotation.Autowired;
+desc:in this bean id is not required.
+
+
+public class Hello {
+
+	@Autowired(required=false)
+	
+	private A aobj;
+	
+	@Autowired(required=false)
+	
+	private B bobj;
+	
+	
+	public void show()
+	{
+		System.out.println(" Hello show()");
+		System.out.println(aobj);
+		System.out.println(bobj);
+	}
+
+}
+
+pk.xml
+-------
+<context:annotation-config/>
+
+
+<bean id="hello" class="com.mncindia.spring.Hello"/>
+
+
+
+</beans>
+
+------------------------------------------------------------------------------------------------
+
+Lab18:@Required==>is present in import org.springframework.beans.factory.annotation.Required;
+desc:it is same as attribute="true" bean with id must bu required.
+
+hello.java
+-----------
+public class Hello {
+	private A aobj;
+	private B bobj;
+	
+	@Required
+	public void setAobj(A aobj) {
+		System.out.println("Hello-setAobj()");
+		this.aobj = aobj;
+	}
+
+	@Required
+	public void setBobj(B bobj) {
+		System.out.println("setBobj()");
+		this.bobj = bobj;
+	}
+
+
+	public void show()
+	{
+		System.out.println(" Hello show()");
+		aobj.showA();
+		bobj.showB();
+	}
+
+}
+------------
+<context:annotation-config/>
+<bean id="ao1" class="com.mncindia.spring.A" p:a="10" p:msg="Hello P.K"/>
+
+<bean id="ao" class="com.mncindia.spring.A" p:a="1010" p:msg="Hello P.K"/>
+
+<bean id="bo" class="com.mncindia.spring.B" >
+<constructor-arg  value="20"/>
+<constructor-arg  value="Hai guys"/>
+</bean>
+
+<bean id="bo1" class="com.mncindia.spring.B" >
+<constructor-arg  value="2020"/>
+<constructor-arg  value="Hai guys"/>
+</bean>
+
+
+------------------------------------------------------------------------------------------------
+Using JSR-250 Annotations
+
+Following annotation provisded in javax.annotation package:
+1)@PostConstruct  init()
+2)@PreDestroy     destroy()
+3)@Resource 
+
+note:When you want to use JSR-250 Annotation you must add "javaee.jar" file to project build path.
+
+1)@PostConstruct:You can mark any method with @PostConstruct Annotation to call that methode after 
+  creating the instance.
+
+
+2)@PreDestroy:You can mark any methode with @PostDestory Annotation to call that methode before destroy 
+  the instance.
+ 
+3)@Resource:When you use @Resource then bean will be dettected either based on "byName" or "byType" process
+and inject them.
+
+  i>When name attribute is specified for @Resource then uses "byName" 
+ ii>When name attribute is not specified for @Resource then uses "byType" 
+
+      
+-------------------------------------------------------------------------------------------------
+Lab19:in this example we are using both @Resource for Bean A  and @Resource(name="bo") for Bean B
+
+Hello.java
+-----------
+package com.mncindia.spring;
+
+import javax.annotation.Resource;
+
+
+
+public class Hello {
+
+	@Resource
+	private A aobj;
+	
+	@Resource(name="bo")
+	private B bobj;
+	
+	
+	public void show()
+	{
+		System.out.println(" Hello show()");
+		aobj.showA();
+		bobj.showB();
+	}
+
+}
+
+xml:
+-------
+<beans........................................................>
+<context:annotation-config/>
+<bean id="ao" class="com.mncindia.spring.A" p:a="10" p:msg="Hello P.K"/>
+
+<bean id="bo" class="com.mncindia.spring.B" >
+<constructor-arg  value="20"/>
+<constructor-arg  value="Hai guys"/>
+</bean>
+
+<bean id="bo1" class="com.mncindia.spring.B" >
+<constructor-arg  value="20"/>
+<constructor-arg  value="Hai guys"/>
+</bean>
+
+<bean id="hello" class="com.mncindia.spring.Hello"/>
+
+</beans>
+
+Note:
+    when we are using two been with the same name and definig @Resource without name attribute the it will gives error :
+org.springframework.beans.factory.BeanCreationException: 
+org.springframework.beans.factory.NoSuchBeanDefinitionException: 
+No unique bean of type [com.mncindia.spring.A] is defined: expected single matching bean but found 2: 
+[ao, ao1]
+
+------------------------------------------------------------------------------------------------------
+Lab20>IN this lab we are checking following:
+      A)Spring containe callback or Lifecycle methode.
+        1)Inintialization callback and destroy callbacks using first approch
+
+
+A.java:
+-------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+public class A {
+	private int a;
+	private String msg;
+	static{
+		System.out.println("A-S.B");
+	}
+	
+	public A()
+	{
+		System.out.println("A-()");
+	}
+	
+	public void setMsg(String msg)
+	{
+		this.msg=msg;
+	}
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("A-init()");
+	}
+ public void setA(int a) {
+		this.a = a;
+	}
+ 
+ @PreDestroy
+ public void cleanup()
+ {
+	 System.out.println("A-cleanup()");
+ }
+
+public String toString(){
+	 return ""+a+"\t"+msg;
+	 
+ }
+}
+
+B.java:
+------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+public class B {
+	private int b;
+	private String msg;
+	
+	static 
+	{
+		System.out.println("B-S.B");
+	}
+	
+	public B()
+	{
+		System.out.println("B-()");
+	}
+
+	@PreDestroy
+	 public void cleanup()
+	 {
+		 System.out.println("B-cleanup()");
+	 }
+	public B(int b, String msg) {
+	
+		this.b = b;
+		this.msg = msg;
+	}
+	
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("B-init()");
+	}
+	
+	
+	public String toString() {
+		
+		return ""+b+"\t"+msg;
+	}
+
+	
+}
+
+Hello.java
+----------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class Hello {
+	@Autowired
+	A aobj;
+	@Autowired
+	B bobj;
+	
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("Hello-init()");
+	}
+public Hello()
+{
+	System.out.println("Hello-()");
+}
+	public Hello(A aobj, B bobj) {
+		
+		this.aobj = aobj;
+		this.bobj = bobj;
+	}
+	@PreDestroy
+	 public void cleanup()
+	 {
+		 System.out.println("Hello-cleanup()");
+	 }
+	public void show()
+	{
+		System.out.println(aobj);
+		System.out.println(bobj);
+	}
+
+	
+	
+	
+
+}
+
+pk.xml:
+-------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<context:annotation-config/>
+<bean id="aobj" class="com.mncindia.spring.A" p:a="10" p:msg="Hello P.K"/>
+
+<bean id="bobj" class="com.mncindia.spring.B" >
+<constructor-arg  value="2020"/>
+<constructor-arg  value="Hai guys,I am second choice"/>
+</bean>
+<bean id="hello" class="com.mncindia.spring.Hello"/>
+</beans>
+
+Lab20
+------
+package com.mncindia.spring;
+
+
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class Lab19 {
+	public static void main(String[] args) {
+		AbstractApplicationContext ctx=new ClassPathXmlApplicationContext("pk.xml");
+		System.out.println("Spring container is rady");
+		Hello h=(Hello)ctx.getBean("hello");
+		h.show();
+		System.out.println("Spring container is going to shutdown");
+		ctx.registerShutdownHook();
+		
+		
+		
+	}
+
+}
+
+
+Note:When you want shutdown the containe explicitly then you should use:
+Container:AbstractApplicationContext ctx=new ClassPathXmlApplicationContext("pk.xml");
+methode:ctx.registerShutdownHook();
+
+2)Inintialization callback and destroy callbacks using Second approch
+
+A.java
+-------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+public class A implements InitializingBean,DisposableBean{
+	private int a;
+	private String msg;
+	static{
+		System.out.println("A-S.B");
+	}
+	
+	public A()
+	{
+		System.out.println("A-()");
+	}
+	
+	public void setMsg(String msg)
+	{
+		this.msg=msg;
+	}
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("A-init()");
+	}
+ public void setA(int a) {
+		this.a = a;
+	}
+ 
+ @PreDestroy
+ public void cleanup()
+ {
+	 System.out.println("A-cleanup()");
+ }
+
+public String toString(){
+	 return ""+a+"\t"+msg;
+	 
+ }
+
+
+public void afterPropertiesSet() throws Exception {
+	System.out.println("A-afterPropertiesSet()");
+	
+}
+
+
+public void destroy() throws Exception {
+	System.out.println("A-destroy()");
+	
+}
+}
+
+
+B.java
+--------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+public class B implements InitializingBean,DisposableBean{
+	private int b;
+	private String msg;
+	
+	static 
+	{
+		System.out.println("B-S.B");
+	}
+	
+	public B()
+	{
+		System.out.println("B-()");
+	}
+
+	@PreDestroy
+	 public void cleanup()
+	 {
+		 System.out.println("B-cleanup()");
+	 }
+	public B(int b, String msg) {
+	
+		this.b = b;
+		this.msg = msg;
+	}
+	
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("B-init()");
+	}
+	
+	
+	public String toString() {
+		
+		return ""+b+"\t"+msg;
+	}
+
+	
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("B-afterPropertiesSet()");
+		
+	}
+	public void destroy() throws Exception {
+		System.out.println("B-destroy()");
+		
+	}
+
+	
+}
+
+Hello.java
+-----------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class Hello implements InitializingBean ,DisposableBean{
+	@Autowired
+	A aobj;
+	@Autowired
+	B bobj;
+	
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("Hello-init()");
+	}
+public Hello()
+{
+	System.out.println("Hello-()");
+}
+	public Hello(A aobj, B bobj) {
+		
+		this.aobj = aobj;
+		this.bobj = bobj;
+	}
+	@PreDestroy
+	 public void cleanup()
+	 {
+		 System.out.println("Hello-cleanup()");
+	 }
+	public void show()
+	{
+		System.out.println(aobj);
+		System.out.println(bobj);
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("hello-afterPropertiesSet()");
+		
+	}
+	public void destroy() throws Exception {
+		System.out.println("A-destroy()");
+		
+	}
+	
+	
+
+}
+
+Lab20b.
+-------
+package com.mncindia.spring;
+
+
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class Lab19 {
+	public static void main(String[] args) {
+		AbstractApplicationContext ctx=new ClassPathXmlApplicationContext("pk.xml");
+		System.out.println("Spring container is rady");
+		Hello h=(Hello)ctx.getBean("hello");
+		h.show();
+		System.out.println("Spring container is going to shutdown");
+		ctx.registerShutdownHook();
+		
+		
+		
+	}
+
+}
+
+pk.xml
+.......
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<context:annotation-config/>
+<bean id="aobj" class="com.mncindia.spring.A" p:a="10" p:msg="Hello P.K"/>
+
+<bean id="bobj" class="com.mncindia.spring.B" >
+<constructor-arg  value="2020"/>
+<constructor-arg  value="Hai guys,I am second choice"/>
+</bean>
+<bean id="hello" class="com.mncindia.spring.Hello"/>
+</beans>
+
+
+OUTPUT:
+---------
+A-S.B
+A-()
+A-init()
+A-afterPropertiesSet()
+B-S.B
+B-init()
+B-afterPropertiesSet()
+Hello-()
+Hello-init()
+hello-afterPropertiesSet()
+Spring container is rady
+10	Hello P.K
+2020	Hai guys,I am second choice
+Spring container is going to shutdown
+Hello-cleanup()
+Hello-destroy()
+B-cleanup()
+B-destroy()
+A-cleanup()
+A-destroy()
+
+
+3)Inintialization callback and destroy callbacks using Thired approch
+
+A.java
+-------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+public class A implements InitializingBean,DisposableBean{
+	private int a;
+	private String msg;
+	static{
+		System.out.println("A-S.B");
+	}
+	
+	public A()
+	{
+		System.out.println("A-()");
+	}
+	
+	public void setMsg(String msg)
+	{
+		this.msg=msg;
+	}
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("A-init()");
+	}
+	
+	public void myInit()
+	{
+		System.out.println("A-myInit()");
+	}
+	
+	
+ public void setA(int a) {
+		this.a = a;
+	}
+ 
+ @PreDestroy
+ public void cleanup()
+ {
+	 System.out.println("A-cleanup()");
+ }
+ 
+ public void myCleanup()
+ {
+	 System.out.println("A-myCleanup()");
+ }
+
+public String toString(){
+	 return ""+a+"\t"+msg;
+	 
+ }
+
+
+public void afterPropertiesSet() throws Exception {
+	System.out.println("A-afterPropertiesSet()");
+	
+}
+
+
+public void destroy() throws Exception {
+	System.out.println("A-destroy()");
+	
+}
+}
+
+B.java
+--------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+public class B implements InitializingBean,DisposableBean{
+	private int b;
+	private String msg;
+	
+	static 
+	{
+		System.out.println("B-S.B");
+	}
+	
+	public B()
+	{
+		System.out.println("B-()");
+	}
+
+	@PreDestroy
+	 public void cleanup()
+	 {
+		 System.out.println("B-cleanup()");
+	 }
+	public void myCleanup()
+	 {
+		 System.out.println("B-myCleanup()");
+	 }
+
+	public B(int b, String msg) {
+	
+		this.b = b;
+		this.msg = msg;
+	}
+	
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("B-init()");
+	}
+	
+	public void myInit()
+	{
+		System.out.println("B-myInit()");
+	}
+	
+	public String toString() {
+		
+		return ""+b+"\t"+msg;
+	}
+
+	
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("B-afterPropertiesSet()");
+		
+	}
+	public void destroy() throws Exception {
+		System.out.println("B-destroy()");
+		
+	}
+
+	
+}
+
+Hello.java
+-----------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class Hello implements InitializingBean ,DisposableBean{
+	@Autowired
+	A aobj;
+	@Autowired
+	B bobj;
+	
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("Hello-init()");
+	}
+	
+	public void myInit()
+	{
+		System.out.println("Hello-myInit()");
+	}
+public Hello()
+{
+	System.out.println("Hello-()");
+}
+	public Hello(A aobj, B bobj) {
+		
+		this.aobj = aobj;
+		this.bobj = bobj;
+	}
+	@PreDestroy
+	 public void cleanup()
+	 {
+		 System.out.println("Hello-cleanup()");
+	 }
+	public void myCleanup()
+	 {
+		 System.out.println("Hello-myCleanup()");
+	 }
+
+	public void show()
+	{
+		System.out.println(aobj);
+		System.out.println(bobj);
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("hello-afterPropertiesSet()");
+		
+	}
+	public void destroy() throws Exception {
+		System.out.println("Hello-destroy()");
+		
+	}
+	
+	
+
+}
+
+Lab20 c)
+---------
+package com.mncindia.spring;
+
+
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class Lab19 {
+	public static void main(String[] args) {
+		AbstractApplicationContext ctx=new ClassPathXmlApplicationContext("pk.xml");
+		System.out.println("Spring container is rady");
+		Hello h=(Hello)ctx.getBean("hello");
+		h.show();
+		System.out.println("Spring container is going to shutdown");
+		ctx.registerShutdownHook();
+		
+		
+		
+	}
+
+}
+
+
+pk.xml
+-------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<context:annotation-config/>
+<bean id="aobj" class="com.mncindia.spring.A" p:a="10" p:msg="Hello P.K"  init-method="myInit" destroy-method="myCleanup"/>
+
+<bean id="bobj" class="com.mncindia.spring.B" init-method="myInit" destroy-method="myCleanup">
+<constructor-arg  value="2020"/>
+<constructor-arg  value="Hai guys,I am second choice"/>
+</bean>
+<bean id="hello" class="com.mncindia.spring.Hello" init-method="myInit" destroy-method="myCleanup"/>
+
+</beans>
+
+
+OUTPUT:
+--------
+A-S.B
+A-()
+A-init()
+A-afterPropertiesSet()
+A-myInit()
+B-S.B
+B-init()
+B-afterPropertiesSet()
+B-myInit()
+Hello-()
+Hello-init()
+hello-afterPropertiesSet()
+Hello-myInit()
+Spring container is rady
+10	Hello P.K
+2020	Hai guys,I am second choice
+Spring container is going to shutdown
+Hello-cleanup()
+Hello-destroy()
+Hello-myCleanup()
+B-cleanup()
+B-destroy()
+B-myCleanup()
+A-cleanup()
+A-destroy()
+A-myCleanup()
+
+
+3)Knowing who you are and where you are
+----------------------------------------
+sometime Bean want to know what its name and where it is running
+For this,you can use the folloeing 3 aware interfaces
+  1)BeanNameAware
+  2)BeanFactoryAware
+  3)ApplicationContextAware
+
+Note:BeanFactory and ApplicationContext obj Can be injected into Bean in two ways
+
+1)Using Aware Interfaces
+
+
+Hello.java
+----------
+package com.mncindia.spring;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+public class Hello implements InitializingBean ,DisposableBean,BeanNameAware,BeanFactoryAware,ApplicationContextAware{
+	@Autowired
+	A aobj;
+	@Autowired
+	B bobj;
+	
+	String bname;
+	
+	BeanFactory fac1;
+	ApplicationContext apctx;
+	
+	@PostConstruct
+	public void init()
+	{
+		System.out.println("Hello-init()");
+	}
+	
+	public void myInit()
+	{
+		System.out.println("Hello-myInit()");
+	}
+public Hello()
+{
+	System.out.println("Hello-()");
+}
+	public Hello(A aobj, B bobj) {
+		
+		this.aobj = aobj;
+		this.bobj = bobj;
+	}
+	@PreDestroy
+	 public void cleanup()
+	 {
+		 System.out.println("Hello-cleanup()");
+	 }
+	public void myCleanup()
+	 {
+		 System.out.println("Hello-myCleanup()");
+	 }
+
+	public void show()
+	{
+		System.out.println(aobj);
+		System.out.println(bobj);
+		System.out.println("BeanName:"+bname);
+		System.out.println("FactoryAware:"+fac1);
+		System.out.println("ApplicationContext:"+apctx);
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		System.out.println("hello-afterPropertiesSet()");
+		
+	}
+	public void destroy() throws Exception {
+		System.out.println("Hello-destroy()");
+		
+	}
+
+	
+	public void setBeanName(String bname) {
+		System.out.println("Hello-setBeanName(String bname)");
+		this.bname=bname;
+		
+		
+	}
+
+	
+	public void setBeanFactory(BeanFactory fac1) throws BeansException {
+		System.out.println("Hello-setBeanFactory(BeanFactory fac1)");
+		this.fac1=fac1;
+		
+	}
+
+	
+	public void setApplicationContext(ApplicationContext apctx)
+			throws BeansException {
+		System.out.println("Hello-setApplicationContext(ApplicationContext apctx)");
+		this.apctx=apctx;
+		
+	}
+	
+	
+	public String toString() {
+		
+		return ""+aobj+"\t"+bobj+"\t"+bname+"\t"+fac1+"\t"+apctx;
+	}
+	
+	
+
+}
+
+
+pk.xml
+--------
+same above
+
+
+OUTPUT:
+---------
+A-S.B
+A-()
+A-init()
+A-afterPropertiesSet()
+A-myInit()
+B-S.B
+B-init()
+B-afterPropertiesSet()
+B-myInit()
+Hello-()
+Hello-setBeanName(String bname)
+Hello-setBeanFactory(BeanFactory fac1)
+Hello-setApplicationContext(ApplicationContext apctx)
+Hello-init()
+hello-afterPropertiesSet()
+Hello-myInit()
+Spring container is rady
+10	Hello P.K
+2020	Hai guys,I am second choice
+BeanName:hello
+FactoryAware:org.springframework.beans.factory.support.DefaultListableBeanFactory@1d8e0f3: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,aobj,bobj,hello]; root of factory hierarchy
+ApplicationContext:org.springframework.context.support.ClassPathXmlApplicationContext@163f7a1: startup date [Fri Feb 12 17:37:21 IST 2016]; root of context hierarchy
+Spring container is going to shutdown
+Hello-cleanup()
+Hello-destroy()
+Hello-myCleanup()
+B-cleanup()
+B-destroy()
+B-myCleanup()
+----------
+2)Using @Autowired:
+
+You can add these things in Hello.java:
+
+        @Autowired
+	BeanFactory fac2;
+	@Autowired
+	ApplicationContext apctx2;
+
+ these in show=>System.out.println("FactoryAware:fac2:"+fac2);
+		System.out.println("ApplicationContext:apctx2:"+apctx2);
+
+OUTPUT:
+-------
+A-S.B
+A-()
+A-init()
+A-afterPropertiesSet()
+A-myInit()
+B-S.B
+B-init()
+B-afterPropertiesSet()
+B-myInit()
+Hello-()
+Hello-setBeanName(String bname)
+Hello-setBeanFactory(BeanFactory fac1)
+Hello-setApplicationContext(ApplicationContext apctx)
+Hello-init()
+hello-afterPropertiesSet()
+Hello-myInit()
+Spring container is rady
+10	Hello P.K
+2020	Hai guys,I am second choice
+BeanName:hello
+FactoryAware:org.springframework.beans.factory.support.DefaultListableBeanFactory@1988802: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,aobj,bobj,hello]; root of factory hierarchy
+ApplicationContext:org.springframework.context.support.ClassPathXmlApplicationContext@163f7a1: startup date [Fri Feb 12 17:52:27 IST 2016]; root of context hierarchy
+FactoryAware:fac2:org.springframework.beans.factory.support.DefaultListableBeanFactory@1988802: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,aobj,bobj,hello]; root of factory hierarchy
+ApplicationContext:apctx2:org.springframework.context.support.ClassPathXmlApplicationContext@163f7a1: startup date [Fri Feb 12 17:52:27 IST 2016]; root of context hierarchy
+Spring container is going to shutdown
+Hello-cleanup()
+Hello-destroy()
+Hello-myCleanup()
+B-cleanup()
+B-destroy()
+B-myCleanup()
+A-cleanup()
+A-destroy()
+A-myCleanup()
+
+4)Extending Container Functionality
+
+ *You can extends the spring container Functionality using BeanPostProcessor interface.
+  Steps:
+        *write your own Custom class by implementing BeanPostProcessor interface
+        *Override the following 2 methods
+           >public Object postProcessAfterInitialization(Object arg0, String arg1)throws BeansException 
+           >public Object postProcessBeforeInitialization(Object arg0, String arg1)throws BeansException
+       *Register your BeanPostProcessor with the Spring Container:
+        <bean class="com.mncindia.spring.MyBeanPostProcessor"/>
+  Note:no need to bean id becoz it is for containe no future use of ous.
+
+OUTPUT:
+------
+A-S.B
+A-()
+postProcessBeforeInitialization:aobj
+A-init()
+A-afterPropertiesSet()
+A-myInit()
+postProcessAfterInitialization:aobj
+B-S.B
+postProcessBeforeInitialization:bobj
+B-init()
+B-afterPropertiesSet()
+B-myInit()
+postProcessAfterInitialization:bobj
+Hello-()
+Hello-setBeanName(String bname)
+Hello-setBeanFactory(BeanFactory fac1)
+Hello-setApplicationContext(ApplicationContext apctx)
+postProcessBeforeInitialization:hello
+Hello-init()
+hello-afterPropertiesSet()
+Hello-myInit()
+postProcessAfterInitialization:hello
+Spring container is rady
+10	Hello P.K
+2020	Hai guys,I am second choice
+BeanName:hello
+FactoryAware:org.springframework.beans.factory.support.DefaultListableBeanFactory@d63b5b: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,aobj,bobj,com.mncindia.spring.MyBeanPostProcessor#0,hello]; root of factory hierarchy
+ApplicationContext:org.springframework.context.support.ClassPathXmlApplicationContext@163f7a1: startup date [Fri Feb 12 18:14:37 IST 2016]; root of context hierarchy
+FactoryAware:fac2:org.springframework.beans.factory.support.DefaultListableBeanFactory@d63b5b: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,aobj,bobj,com.mncindia.spring.MyBeanPostProcessor#0,hello]; root of factory hierarchy
+ApplicationContext:apctx2:org.springframework.context.support.ClassPathXmlApplicationContext@163f7a1: startup date [Fri Feb 12 18:14:37 IST 2016]; root of context hierarchy
+Spring container is going to shutdown
+Hello-cleanup()
+Hello-destroy()
+Hello-myCleanup()
+B-cleanup()
+B-destroy()
+B-myCleanup()
+A-cleanup()
+A-destroy()
+A-myCleanup()
+
+
+
+
+
+------------------------------------------------------------------------------------------------------
+
+Q 64)what is P-Namespace?
+Ans> P namesapace is used to reduce the configuration file.
+Like:
+<bean id="ao" class="...A" p:a="10" p:msg="Hi guys"/>
+
+note:when you are using P-Nmaespace you should enable the P-Nmaespace by adding the following:
+
+xmlns:P="http://www.springconframework.org/schema/p" 
+  here P is namespace prefix we which is changeable.
+ref Lab#12.
+
+
+Q 65)How can we implement Annotation based Auto Wiring?
+  Ans=> using @Autowired and @Resource.
+
+Q 66)what is diffrence between @Autowired and @Resource?
+   Ans=> @Autowired
+        i)when we used @Autowired then by default ,bean will be detected based on by type nad injected.
+        ii)BY default its similar to autowire="byType" and injected  without setter.
+        @Resource
+        i)when we use then bean will be ditected based on eithre "byType" on "byNmae" accourding to some condition:
+          a)@Resource(name=".."): In this case bean will be ditected based on "byName".
+          b)@resource           :In this case bean will be detected based on "byType".  
+
+Q 67)Can i use anootation directy in spring Application?
+  Ans=>No,we must enable annotation processing by writing the <context:annotaion-config/> tags.
+
+
+
+Q 67) 

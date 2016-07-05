@@ -1,0 +1,10 @@
+package com.jlcindia.spring;
+
+public class Lab48 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
