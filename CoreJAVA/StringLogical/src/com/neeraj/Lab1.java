@@ -1,5 +1,4 @@
 package com.neeraj;
-
 public class Lab1 {
 public static void main(String...as){
 	String s="Neeraj";

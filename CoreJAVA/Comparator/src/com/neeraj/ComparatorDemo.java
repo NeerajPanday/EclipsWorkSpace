@@ -24,8 +24,8 @@ public class ComparatorDemo {
 			System.out.println(e1.name+ "  "+e1.id);
 		}
 		
-		System.out.println();
-		System.out.println();
+		System.out.println("Hello............");
+		System.out.println("Hiiiii...........");
 		
 		
 Collections.sort(l,new SortById());
@@ -36,8 +36,6 @@ Collections.sort(l,new SortById());
 		while(itr2.hasNext()){
 			Employee e2=(Employee) itr2.next();
 			System.out.println(e2.name+ "  "+e2.id);
-		}
-		
+		}	
 	}
-
 }

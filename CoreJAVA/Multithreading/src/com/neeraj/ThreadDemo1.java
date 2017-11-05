@@ -9,7 +9,7 @@ public class ThreadDemo1 {
 		for(int i=0;i<=10;i++){
 			System.out.println("main thread");
 		}
-		t.start();
+		//t.start();
 	}
 
 }

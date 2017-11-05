@@ -11,14 +11,13 @@ public class ComparableDemo implements Comparable {
 		this.name = name;
 		this.id = id;
 		}
-		
 		public int compareTo(Object o) {
 			ComparableDemo d = (ComparableDemo)o;
 			return this.name.compareTo(d.name);
 		}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void main(String[] args) {
-		ArrayList al = new ArrayList<>();
+		ArrayList al = new ArrayList();
 		al.add(new ComparableDemo("Neeraj", 5));
 		al.add(new ComparableDemo("Vivekanand", 4));
 		al.add(new ComparableDemo("Saroj", 3));
@@ -30,8 +29,7 @@ public class ComparableDemo implements Comparable {
 		Iterator it = al.iterator();
 		while(it.hasNext()){
 			ComparableDemo cd = (ComparableDemo) it.next();
-			System.out.println(cd.name+"  "+cd.id);
-			
+			System.out.println(cd.name+"  "+cd.id);		
 		}
 	}
 }

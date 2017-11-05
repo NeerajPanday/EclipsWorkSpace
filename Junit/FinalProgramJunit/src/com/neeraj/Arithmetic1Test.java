@@ -30,11 +30,11 @@ public class Arithmetic1Test {
 	@Test
 	public void test() {
 		Arithmetic1 a=new Arithmetic1();
-		int m=a.sum(10, 20);
+		int m=a.sum(10, 2);
 		int m1=a.sum(23, 23);
 		int m2=a.sub(10,20);
-		Assert.assertEquals(m, 30);
-		Assert.
+		Assert.assertEquals(m, 12);
+		//Assert.
 		Assert.assertEquals(m1, 46);
 		Assert.assertEquals(m2, -10);
 		System.out.println("test case");

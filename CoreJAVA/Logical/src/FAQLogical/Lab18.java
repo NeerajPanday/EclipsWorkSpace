@@ -3,7 +3,8 @@ package FAQLogical;
 public class Lab18 {
 
 	public static void main(String[] args) {
-		int[] ar={1,2,3,4,5,4,3,2,6,7};
+		String s="Neeraj";
+		String[] ar=s.split("");
 		int count=1;
 		boolean bool=true;
 		for (int i = 0; i < ar.length; i++) {

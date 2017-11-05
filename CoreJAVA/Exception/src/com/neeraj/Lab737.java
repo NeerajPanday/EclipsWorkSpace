@@ -34,6 +34,7 @@ class StudentNotFoundException extends RuntimeException
 {
 	String sname;
 	StudentNotFoundException(String sname){
+		
 	super(sname);
 	}
 } 
